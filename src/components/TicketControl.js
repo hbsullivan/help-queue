@@ -4,6 +4,7 @@ import TicketList from "./TicketList";
 import Steps from "./Steps";
 import Minutes from "./Minutes";
 import Help from "./Help";
+import TicketDetail from "./TicketDetail";
 
 class TicketControl extends React.Component {
 
@@ -11,18 +12,25 @@ class TicketControl extends React.Component {
     super(props);
     this.state = {
       formVisibleOnPage: 0,
-      mainTicketList: []
+      mainTicketList: [],
+      selectedTicket: null
     };
   }
 
   handleClick = () => {
-    if (this.state.formVisibleOnPage < 3) {
+     
+    if(this.state.selectedTicket !== null){
       this.setState(prevState => ({
-        formVisibleOnPage: prevState.formVisibleOnPage += 1
+        formVisibleOnPage: prevState.formVisibleOnPage = 0,
+        selectedTicket: null
       }));
-    } else {
+    } else if (this.state.formVisibleOnPage < 3) {
       this.setState(prevState => ({
-        formVisibleOnPage: prevState.formVisibleOnPage = -1
+        formVisibleOnPage: prevState.formVisibleOnPage += 1,
+      }));
+    }  else {
+      this.setState(prevState => ({
+        formVisibleOnPage: prevState.formVisibleOnPage = -1,
       }));
     }
   }
@@ -31,25 +39,33 @@ class TicketControl extends React.Component {
     const newMainTicketList = this.state.mainTicketList.concat(newTicket);
     this.setState({mainTicketList: newMainTicketList, formVisibleOnPage: 0});
   }
+
+  handleChangingSelectedTicket = (id) => {
+    const selectedTicket = this.state.mainTicketList.filter(ticket => ticket.id === id)[0];
+    this.setState({selectedTicket: selectedTicket});
+  }
   
   render(){
     let currentlyVisibleState = null;
-    let buttonText = "Add Ticket";
-    if(this.state.formVisibleOnPage === 0) {
-      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList}/>
+    let buttonText = null;
+    if(this.state.selectedTicket != null) {
+      currentlyVisibleState = <TicketDetail ticket = {this.state.selectedTicket}/>;
+      buttonText = "Return to Ticket List";
+    } else if(this.state.formVisibleOnPage === 0) {
+      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList} onTicketSelection={this.handleChangingSelectedTicket} />;
       buttonText = "Add Ticket";
     } else if(this.state.formVisibleOnPage === 1){
-      currentlyVisibleState = <Steps />
+      currentlyVisibleState = <Steps />;
       buttonText = "Yes";
     } else if(this.state.formVisibleOnPage === 2) {
-      currentlyVisibleState = <Help />
+      currentlyVisibleState = <Help />;
       buttonText = "Yes";
     } else if(this.state.formVisibleOnPage === 3) {
-      currentlyVisibleState = <Minutes />
+      currentlyVisibleState = <Minutes />;
       buttonText = "Yes";
     } else{
       currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList}/>
-      buttonText = "Return";
+      buttonText = "Return to Ticket List";
     }
     return (
        <React.Fragment>
