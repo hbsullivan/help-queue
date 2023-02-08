@@ -11,21 +11,9 @@ class TicketControl extends React.Component {
     super(props);
     this.state = {
       formVisibleOnPage: 0,
-      whatButton: true
+      mainTicketList: []
     };
   }
-
-  // handleClick = () => {
-  //   this.setState(prevState => ({
-  //     formVisibleOnPage: prevState.formVisibleOnPage += 1
-  //   }));
-  // }
-
-  // resetCount = () => {
-  //   this.setState(prevState => ({
-  //     formVisibleOnPage: prevState.formVisibleOnPage = 0
-  //   }));
-  // }
 
   handleClick = () => {
     if (this.state.formVisibleOnPage < 3) {
@@ -38,12 +26,17 @@ class TicketControl extends React.Component {
       }));
     }
   }
+
+  handleAddingNewTicketToList = (newTicket) => {
+    const newMainTicketList = this.state.mainTicketList.concat(newTicket);
+    this.setState({mainTicketList: newMainTicketList, formVisibleOnPage: 0});
+  }
   
   render(){
     let currentlyVisibleState = null;
     let buttonText = "Add Ticket";
     if(this.state.formVisibleOnPage === 0) {
-      currentlyVisibleState = <TicketList />
+      currentlyVisibleState = <TicketList ticketList={this.state.mainTicketList}/>
       buttonText = "Add Ticket";
     } else if(this.state.formVisibleOnPage === 1){
       currentlyVisibleState = <Steps />
@@ -55,14 +48,13 @@ class TicketControl extends React.Component {
       currentlyVisibleState = <Minutes />
       buttonText = "Yes";
     } else{
-      currentlyVisibleState = <NewTicketForm />
+      currentlyVisibleState = <NewTicketForm onNewTicketCreation={this.handleAddingNewTicketToList}/>
       buttonText = "Return";
     }
     return (
        <React.Fragment>
         {currentlyVisibleState}
         <button onClick={this.handleClick}>{buttonText}</button>
-        {/* <button onClick={this.resetCount}>experiment</button> */}
        </React.Fragment>
     );
   }
